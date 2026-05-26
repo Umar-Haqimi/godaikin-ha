@@ -6,10 +6,10 @@
     ],
     "config_flow": true,
     "dependencies": [],
-    "documentation": "https://github.com/doubleukay/godaikin-ha",
+    "documentation": "https://github.com/umar-haqimi/godaikin-ha",
     "integration_type": "hub",
     "iot_class": "cloud_polling",
-    "issue_tracker": "https://github.com/doubleukay/godaikin-ha/issues",
+    "issue_tracker": "https://github.com/umar-haqimi/godaikin-ha/issues",
     "requirements": [],
-    "version": "2.1.5"
+    "version": "2.1.6"
 }
