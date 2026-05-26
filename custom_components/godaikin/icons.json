@@ -1,0 +1,19 @@
+{
+    "entity": {
+        "climate": {
+            "state_attributes": {
+                "fan_mode": {
+                    "state": {
+                        "auto": "mdi:fan-auto",
+                        "quiet": "mdi:fan-minus",
+                        "level_1": "mdi:numeric-1-circle-outline",
+                        "level_2": "mdi:numeric-2-circle-outline",
+                        "level_3": "mdi:numeric-3-circle-outline",
+                        "level_4": "mdi:numeric-4-circle-outline",
+                        "level_5": "mdi:numeric-5-circle-outline"
+                    }
+                }
+            }
+        }
+    }
+}

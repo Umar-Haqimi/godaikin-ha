@@ -503,6 +503,6 @@ FAN_MODES = [
 ]
 
 # Daikin-specific constants
-MIN_TEMP = 16
+MIN_TEMP = 18
 MAX_TEMP = 31
 TEMP_STEP_AND_PRECISION = 1.0
