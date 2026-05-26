@@ -71,6 +71,7 @@ class GodaikinClimate(CoordinatorEntity[GodaikinDataUpdateCoordinator], ClimateE
     _attr_target_temperature_step = TEMP_STEP
     _attr_precision = PRECISION
     _attr_icon = "mdi:air-conditioner"
+    _attr_translation_key = "godaikin_ac"
 
     def __init__(
         self,
