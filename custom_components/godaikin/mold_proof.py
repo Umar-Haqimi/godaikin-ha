@@ -116,7 +116,7 @@ class MoldProofManager:
         # Set to fan mode with low speed
         try:
             await self.coordinator.api.set_mode(unique_id, mode=AircondMode.FAN_ONLY)
-            await self.coordinator.api.set_fan_mode(unique_id, fan=FanSpeed.LOW)
+            await self.coordinator.api.set_fan_mode(unique_id, fan=FanSpeed.LEVEL_1)
         except Exception as err:
             _LOGGER.error("Failed to start mold-proof for %s: %s", unique_id, err)
             return

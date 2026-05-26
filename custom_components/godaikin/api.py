@@ -115,10 +115,7 @@ class ApiClient:
     async def set_fan_mode(self, unique_id: UniqueID, fan: FanSpeed):
         _LOGGER.info("Setting fan mode %s for %s", fan.value, unique_id)
 
-        await self._set_desired_state(
-            unique_id,
-            Set_Fan=fan.value,
-        )
+        await self._set_desired_state(unique_id, **FAN_SPEED_STATE[fan])
 
     async def set_swing(
         self, unique_id: UniqueID, swing: AircondSwing, horizontal: bool = False

@@ -19,7 +19,15 @@ PLATFORMS = ["climate", "sensor", "light", "switch"]
 
 # HVAC modes
 HVAC_MODES = ["off", "cool", "dry", "fan_only"]
-FAN_MODES = ["auto", "low", "medium", "high"]
+FAN_MODES = [
+    "auto",
+    "quiet",
+    "level_1",
+    "level_2",
+    "level_3",
+    "level_4",
+    "level_5",
+]
 
 # Temperature settings
 MIN_TEMP = 16

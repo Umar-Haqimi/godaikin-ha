@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, StrEnum
 from typing import Optional, Dict, Any, NewType
 
 UniqueID = NewType("UniqueID", str)
@@ -432,12 +432,44 @@ class AircondMode(IntEnum):
     DRY = 4
 
 
-class FanSpeed(IntEnum):
-    AUTO = 128
-    UNKNOWN = 1
-    LOW = 2
-    MEDIUM = 4
-    HIGH = 8
+class FanSpeed(StrEnum):
+    AUTO = "auto"
+    QUIET = "quiet"
+    LEVEL_1 = "level_1"
+    LEVEL_2 = "level_2"
+    LEVEL_3 = "level_3"
+    LEVEL_4 = "level_4"
+    LEVEL_5 = "level_5"
+
+
+# Maps a FanSpeed to the shadow-state fields that should be set when selecting it.
+# Levels are encoded across Set_Fan + Set_FanExtend; QUIET overlays via Set_Silent.
+FAN_SPEED_STATE: Dict["FanSpeed", Dict[str, int]] = {
+    FanSpeed.LEVEL_1: {"Set_Fan": 2,   "Set_FanExtend": 0, "Set_Silent": 0},
+    FanSpeed.LEVEL_2: {"Set_Fan": 2,   "Set_FanExtend": 1, "Set_Silent": 0},
+    FanSpeed.LEVEL_3: {"Set_Fan": 4,   "Set_FanExtend": 0, "Set_Silent": 0},
+    FanSpeed.LEVEL_4: {"Set_Fan": 8,   "Set_FanExtend": 1, "Set_Silent": 0},
+    FanSpeed.LEVEL_5: {"Set_Fan": 8,   "Set_FanExtend": 0, "Set_Silent": 0},
+    FanSpeed.AUTO:    {"Set_Fan": 128, "Set_FanExtend": 0, "Set_Silent": 0},
+    FanSpeed.QUIET:   {"Set_Silent": 1},
+}
+
+_FAN_LEVEL_LOOKUP = {
+    (2, 0): FanSpeed.LEVEL_1,
+    (2, 1): FanSpeed.LEVEL_2,
+    (4, 0): FanSpeed.LEVEL_3,
+    (8, 1): FanSpeed.LEVEL_4,
+    (8, 0): FanSpeed.LEVEL_5,
+}
+
+
+def fan_speed_from_state(state: "ShadowState") -> FanSpeed:
+    """Derive the active FanSpeed from raw shadow-state fields."""
+    if state.Set_Silent == 1:
+        return FanSpeed.QUIET
+    if state.Set_Fan == 128:
+        return FanSpeed.AUTO
+    return _FAN_LEVEL_LOOKUP.get((state.Set_Fan, state.Set_FanExtend), FanSpeed.LEVEL_1)
 
 
 class AircondSwing(IntEnum):
@@ -460,7 +492,15 @@ class AircondPreset(Enum):
 
 # HASS mappings
 HVAC_MODES = ["off", "cool", "dry", "fan_only"]
-FAN_MODES = ["auto", "low", "medium", "high"]
+FAN_MODES = [
+    "auto",
+    "quiet",
+    "level_1",
+    "level_2",
+    "level_3",
+    "level_4",
+    "level_5",
+]
 
 # Daikin-specific constants
 MIN_TEMP = 16

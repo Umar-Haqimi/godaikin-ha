@@ -25,7 +25,15 @@ from .const import (
     TEMP_STEP,
 )
 from .coordinator import GodaikinDataUpdateCoordinator
-from .types import Aircond, AircondMode, AircondPreset, AircondSwing, FanSpeed, UniqueID
+from .types import (
+    Aircond,
+    AircondMode,
+    AircondPreset,
+    AircondSwing,
+    FanSpeed,
+    UniqueID,
+    fan_speed_from_state,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -140,10 +148,9 @@ class GodaikinClimate(CoordinatorEntity[GodaikinDataUpdateCoordinator], ClimateE
         ):
             state = self.coordinator.mold_proof.get_state(self._unique_id)
             if state:
-                return state.previous_fan_speed.name.lower()
+                return state.previous_fan_speed.value
 
-        fan_speed = FanSpeed(self.aircond.shadowState.Set_Fan)
-        return fan_speed.name.lower()
+        return fan_speed_from_state(self.aircond.shadowState).value
 
     @property
     def fan_modes(self) -> list[str]:
@@ -254,7 +261,7 @@ class GodaikinClimate(CoordinatorEntity[GodaikinDataUpdateCoordinator], ClimateE
                 # Only start mold-proof if coming from cool or dry mode
                 current_mode = AircondMode(self.aircond.shadowState.Set_Mode)
                 if current_mode in (AircondMode.COOL, AircondMode.DRY):
-                    prev_fan = FanSpeed(self.aircond.shadowState.Set_Fan)
+                    prev_fan = fan_speed_from_state(self.aircond.shadowState)
                     await self.coordinator.mold_proof.start_mold_proof(
                         self._unique_id, current_mode, prev_fan
                     )
@@ -284,7 +291,7 @@ class GodaikinClimate(CoordinatorEntity[GodaikinDataUpdateCoordinator], ClimateE
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new fan mode."""
-        fan = FanSpeed[fan_mode.upper()]
+        fan = FanSpeed(fan_mode)
         await self.coordinator.api.set_fan_mode(self._unique_id, fan=fan)
         await self.coordinator.async_request_refresh()
 
